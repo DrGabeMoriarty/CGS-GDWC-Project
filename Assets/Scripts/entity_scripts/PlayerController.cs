@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Controller : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     float m_Xaxis,m_Yaxis;
     public float speed = 1.0f;
@@ -17,12 +17,7 @@ public class Controller : MonoBehaviour
     public float rollDuration = 0.2f;
     bool m_PointerBusy=false;
     public float rollReload = 0.8f;
-    public float inaccuracyFloat = 1f;
-    public float recoilplr = 1f;
-    public int ammocapacity = 300, ammo=300,ammoRate=3;              //ammo
-    
-    public int staminacap = 600;                //stamina
-    public int stamina = 600;
+    public int energyCapacity = 300, energy=300,energyRate=3;              //energy
     public int dashUsage = 60;
 
     public GameObject currenProj;
@@ -30,20 +25,17 @@ public class Controller : MonoBehaviour
     
     private Vector2 m_Direction = new Vector2(0, -1);
     private Vector2 m_DodgeDir = new Vector2(0, 0);
-    private Vector2 m_Deviation;
-    private Vector2 m_Inaccuracy;
     private Rigidbody2D m_Rbd;
-    private float m_LastFireTime = 0f;
-    private float m_LastRollTime = 0f;
+    private float m_LastFireTime;
+    private float m_LastRollTime;
     private Quaternion m_Rot = Quaternion.Euler(0, 0, 0);
-    public bool invincible = false;
-    int m_DashDamage=30;
+    public bool invincible;
     Collider2D m_DashCollider;
     Animator m_Anim;
     public GameObject[] projList;
     ParticleSystem m_Trail;
     TrailRenderer m_TrailRender;
-    private HealthBar m_AmmoBar, m_StaminaBar;
+    private HealthBar m_energyBar;
     bool m_IsDashing=false;
     public GameObject statIndicators;
 
@@ -54,33 +46,25 @@ public class Controller : MonoBehaviour
         m_Rbd = GetComponent<Rigidbody2D>();
         m_Anim = this.gameObject.GetComponent<Animator>();
         m_DashCollider = GameObject.Find("dashDamager").GetComponent<CircleCollider2D>();
-        //The above can just be statically assigned to the prefab since there is only 1
-        //using Find() is expensive
         m_DashCollider.enabled = false;
-        //disable this by default ^
-        //just make the default value 0.5 instead of assigning it in script ^
-
         m_TrailRender = this.gameObject.GetComponent<TrailRenderer>();
         m_Trail = GetComponent<ParticleSystem>();
         m_TrailRender.enabled = false;
         m_Trail.Stop();
         //same thing here, just disable them by default.
 
-        health = CeoScript.Health;
-        speed = CeoScript.Speed;
-        ammocapacity = CeoScript.Ammocapacity;
-        staminacap = CeoScript.Staminacap;
+        health = CEO_Script.Health;
+        speed = CEO_Script.Speed;
+        energyCapacity = CEO_Script.energyCapacity;
         //invincible=false;
         
         
-        m_AmmoBar=GameObject.Find("AmmoBar").GetComponent<HealthBar>();               //initializing stamina and ammo bars.
-        m_StaminaBar=GameObject.Find("StaminaBar").GetComponent<HealthBar>();
-        m_AmmoBar.InitializeHealth(ammocapacity);
-        m_StaminaBar.InitializeHealth(staminacap);
-        m_AmmoBar.SetHealth(ammocapacity);
-        m_StaminaBar.SetHealth(staminacap);
+        m_energyBar=GameObject.Find("energyBar").GetComponent<HealthBar>();               //initializing energy and energy bars.
+        m_energyBar.InitializeHealth(energyCapacity);
+        m_energyBar.SetHealth(energyCapacity);
+        
 
-        currenProj = CeoScript.ActivePowerUp;    //for level testing//
+        currenProj = CEO_Script.ActivePowerUp;    //for level testing//
         if(currenProj !=null)
         {
             
@@ -94,12 +78,6 @@ public class Controller : MonoBehaviour
         //Input
         m_Xaxis = Input.GetAxisRaw("Horizontal");
         m_Yaxis = Input.GetAxisRaw("Vertical");
-
-        //to change animation from idle to walking, without indulging in the complexities of 16 animations inside a blend tree
-        if(m_Xaxis !=0 || m_Yaxis !=0)
-            m_Anim.SetFloat("animationSpeed",1);
-        else
-            m_Anim.SetFloat("animationSpeed",0.5f);
         
         //Bullet positioning
         looking = (m_Rbd.position - (Vector2)maincam.ScreenToWorldPoint(Input.mousePosition)).normalized;
@@ -122,15 +100,14 @@ public class Controller : MonoBehaviour
             facingY=0;
 
         //firing weapon
-        if (Input.GetButton("Fire1") && (Time.time > m_LastFireTime + reloadTime) && !(invincible) && currenProj !=null && !m_PointerBusy && ammo > 0)
+        if (Input.GetButton("Fire1") && (Time.time > m_LastFireTime + reloadTime) && !(invincible) && currenProj !=null && !m_PointerBusy && energy > 0)
         {   
-            ammo-=ammoRate;
-            FireWeapon((m_Rbd.position-looking)+m_Inaccuracy, m_Rot);
-	        m_Rbd.velocity = recoilplr*looking; //recoil for player
-            m_AmmoBar.SetHealth(ammo);        //ammo, stamina bar set
-        } else if (!Input.GetButton("Fire1") && ammo < ammocapacity && Time.time > m_LastFireTime + reloadTime){   //ammo recharge
-	        ammo++;
-            m_AmmoBar.SetHealth(ammo);        //ammo, stamina bar set
+            energy-=energyRate;
+            FireWeapon((m_Rbd.position - looking), m_Rot);
+            m_energyBar.SetHealth(energy);        //energy bar set
+        } else if (!Input.GetButton("Fire1") && energy < energyCapacity && Time.time > m_LastFireTime + reloadTime){   //energy recharge
+	        energy++;
+            m_energyBar.SetHealth(energy);        //energy bar set
         }
 	
         m_Direction = new Vector2(m_Xaxis, m_Yaxis);
@@ -138,22 +115,21 @@ public class Controller : MonoBehaviour
         if (m_Direction.x != 0 || m_Direction.y != 0)
         {
             //Dash trigger
-            if (Input.GetButton("Fire2") && (Time.time > m_LastRollTime + rollReload) && stamina >= dashUsage)
+            if (Input.GetButton("Fire2") && (Time.time > m_LastRollTime + rollReload) && energy >= dashUsage)
             {
                 invincible = true;
                 m_IsDashing=true;
                 m_LastRollTime = Time.time;
                 m_DodgeDir = m_Direction;
                 m_DashCollider.enabled=true;
-                if(stamina>=dashUsage)
-		            stamina -= dashUsage;
-                else if(stamina<dashUsage)
-                    stamina=0;
-                m_StaminaBar.SetHealth(stamina);
+                if(energy>=dashUsage)
+		            energy -= dashUsage;
+                else if(energy<dashUsage)
+                    energy=0;
 
                 AudioManager.Instance.Play("dashWhoosh");   //play dash sound
                 AudioManager.Instance.Play("dashFire");
-                AudioManager.Instance.SetVolume("dashFire",(float)(stamina)/staminacap);
+                AudioManager.Instance.SetVolume("dashFire",(float)(energy)/energyCapacity);
             }
         }
 
@@ -168,7 +144,7 @@ public class Controller : MonoBehaviour
             //trailRender.enabled = true;   //trailRender, yes or no? hmmm...
 
             var newEmission = m_Trail.emission;
-                newEmission.rateOverDistance = 100 * (stamina)/staminacap;
+                newEmission.rateOverDistance = 100 * (energy)/energyCapacity;
                 m_Trail.Play();
 
             if (Time.time > m_LastRollTime + rollDuration)
@@ -189,24 +165,23 @@ public class Controller : MonoBehaviour
         } //moved as an else since its more efficient than not
         else  // Normal movement
         {
-            //modified the statements as otherwise it would stop player motion if stamina is regenerating
-            if (!invincible && stamina < staminacap)    //stamina recharge
+            //modified the statements as otherwise it would stop player motion if energy is regenerating
+            if (!invincible && energy < energyCapacity)    //energy recharge
             {
-                if(stamina<=0)
-                    stamina=0;
+                if(energy<=0)
+                    energy=0;
                 if(Time.time > m_LastRollTime + rollReload)
-                    stamina+=1;
-                m_StaminaBar.SetHealth(stamina);
+                    energy+=1;
             } 
             //Motion
                 
         
-        if(CeoScript.CurrentGameState!=CeoScript.GameState.BossBattleCleared || CeoScript.DangerLevel>0)     
+        if(CEO_Script.CurrentGameState!=CEO_Script.GameState.BossBattleCleared || CEO_Script.DangerLevel>0)     
             m_Rbd.transform.position += (Vector3) m_Direction * (speed * Time.fixedDeltaTime);
 
         }
         
-        if(CeoScript.ActivePowerUp==null && CeoScript.CurrentGameState==CeoScript.GameState.PreForestLevel)
+        if(CEO_Script.ActivePowerUp==null && CEO_Script.CurrentGameState==CEO_Script.GameState.PreForestLevel)
         {
             m_Anim.SetFloat("xInput",m_Xaxis);
             m_Anim.SetFloat("yInput",m_Yaxis);
@@ -224,8 +199,8 @@ public class Controller : MonoBehaviour
         //so putting these there \/
         
         /*
-        ammoBar.setHealth(ammo);        //ammo, stamina bar set
-        staminaBar.setHealth(stamina);
+        energyBar.setHealth(energy);        //energy, energy bar set
+        energyBar.setHealth(energy);
         */
 
         //bruh
@@ -240,30 +215,30 @@ public class Controller : MonoBehaviour
 
         //why is this seperate from the firing :confused:               //was with the firing actually, but then thought not to update it in fixedupdate frames
         /*
-        if (Input.GetButton("Fire1") && (Time.time > lastFireTime + reloadTime) && !(invincible) && currenProj !=null && !pointerBusy && ammo > 0)  //ammo update
-            ammo-=ammoRate;
+        if (Input.GetButton("Fire1") && (Time.time > lastFireTime + reloadTime) && !(invincible) && currenProj !=null && !pointerBusy && energy > 0)  //energy update
+            energy-=energyRate;
         */
 
         /*
         if(invincible)            //dash effects
         {
             var newEmission = trail.emission;
-                newEmission.rateOverDistance = 100 * stamina/staminacap;
+                newEmission.rateOverDistance = 100 * energy/energycap;
                 trail.Play();
 
             if(dashLight.intensity<1)
                     dashLight.intensity+=0.05f;
             StartCoroutine(trailfadeDelay());
             AudioManager.instance.Play("dashEffect");   //play dash sound
-            cameraShake.instance.shakeCamera(1f*stamina/staminacap,rollDuration);
+            cameraShake.instance.shakeCamera(1f*energy/energycap,rollDuration);
         } //moved as an else since its more efficient than not
-        else if (!invincible && stamina < staminacap)    //stamina recharge
+        else if (!invincible && energy < energycap)    //energy recharge
         {
-            if(stamina<=0)
-                stamina=0;
+            if(energy<=0)
+                energy=0;
             if(Time.time > lastRollTime + rollReload)
-	            stamina+=2;
-            staminaBar.setHealth(stamina);
+	            energy+=2;
+            energyBar.setHealth(energy);
         }
         */
         //i moved this into an already existing if statement
@@ -279,30 +254,10 @@ public class Controller : MonoBehaviour
 
     void FireWeapon(Vector3 position, Quaternion rotation)
     {
-	    //inaccuracy for player gun, idk how to exactly implenet it for the enmy bullets, since
-	    //the logic for it has changed
-	    m_Inaccuracy = m_Deviation;
-	    m_Inaccuracy = UnityEngine.Random.Range(-1.0f,1.0f)*inaccuracyFloat*m_Inaccuracy;
-        //moved this from the update loop
-
+        
         GameObject bullet = Instantiate(currenProj, position, rotation);
         PlayShotSound();
-        
-        if (currenProj.name == "shotgun")
-        {
-            m_Deviation = Vector2.Perpendicular(looking);
-
-            if(CeoScript.CurrentGameState==CeoScript.GameState.BossBattle)
-                m_Deviation /= 10;
-            else
-                m_Deviation /= 5;
-            //moved this from the update loop
-
-            
-        }
-        
         m_LastFireTime = Time.time;
-        
     }
 
     public void TakeDamage(int dam)
@@ -310,7 +265,7 @@ public class Controller : MonoBehaviour
         if (!invincible)
         {
             health -= dam;
-            CeoScript.Health -= dam;
+            CEO_Script.Health -= dam;
             Debug.Log("health:" + health);
 
             AudioManager.Instance.Play("playerDamage");
@@ -320,7 +275,7 @@ public class Controller : MonoBehaviour
             {
                 health=0;
                 statIndicators.SetActive(false);
-                CeoScript.CurrentGameState=CeoScript.GameState.GameOver;
+                CEO_Script.CurrentGameState=CEO_Script.GameState.GameOver;
                 died=true;
                 //dying animation
                 m_Anim.SetBool("isDead",true);
@@ -355,7 +310,7 @@ public class Controller : MonoBehaviour
         else if(currenProj==projList[4])
         {
             AudioManager.Instance.Play("rpg_fire");
-            if(ammo<=0)
+            if(energy<=0)
                 StartCoroutine(PlaySound("rpg_load",1.5f));
         }
     }   
@@ -380,7 +335,7 @@ public class Controller : MonoBehaviour
         AudioManager.Instance.Stop("pidjon_da_god");
         
         yield return new WaitForSeconds(2);
-        CeoScript.GameOver();
+        CEO_Script.GameOver();
     }
 
     public void cursorOnButton()
@@ -394,7 +349,7 @@ public class Controller : MonoBehaviour
 
     public void Switchweapons(){
         
-        CeoScript.ActivePowerUp = currenProj;
+        CEO_Script.ActivePowerUp = currenProj;
         for (int i = 0; i < 5; i++)             //sprite switching
         {
             if(currenProj !=null && currenProj.name==projList[i].name)

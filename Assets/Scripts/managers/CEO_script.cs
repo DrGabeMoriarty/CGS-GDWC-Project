@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 
-public class CeoScript : MonoBehaviour 
+public class CEO_Script : MonoBehaviour 
 {
-    public static CeoScript Instance;
+    public static CEO_Script Instance;
     public static GameObject[] Powerups;
     public static int[] PowerupSpawned;
     public static GameObject ActivePowerUp;
@@ -29,7 +29,7 @@ public class CeoScript : MonoBehaviour
     public static int Health = 100, HealthLimit = 320, HealthCost=40;
     public static float Speed = 1.0f, SpeedLimit = 1.6f;
     public static int SpeedCost=40;
-    public static int Ammocapacity = 300, AmmoMax = 900, AmmoCost=40;
+    public static int energyCapacity = 300, AmmoMax = 900, AmmoCost=40;
     public static int Staminacap = 600, StaminaMax = 1200, StaminaCost=40;
     public static int FirstLoad,FirstTimeInSession=1;
     public static int Highscore;
@@ -46,6 +46,7 @@ public class CeoScript : MonoBehaviour
             Instance = this; 
             DontDestroyOnLoad(gameObject); 
         } 
+        //this is just a comment
     }
 
     private void Start() 
