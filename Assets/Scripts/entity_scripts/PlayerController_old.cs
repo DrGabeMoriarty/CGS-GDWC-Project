@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 public class PlayerController : MonoBehaviour
-{
+{/*
     float m_Xaxis,m_Yaxis;
     public float speed = 1.0f;
     public int health = 100;
@@ -240,7 +240,7 @@ public class PlayerController : MonoBehaviour
 	            energy+=2;
             energyBar.setHealth(energy);
         }
-        */
+        
         //i moved this into an already existing if statement
         
         
@@ -357,6 +357,6 @@ public class PlayerController : MonoBehaviour
                 m_Anim.SetInteger("attackMode",i+1);
             }
         }
-    }
+    }*/
      
 }

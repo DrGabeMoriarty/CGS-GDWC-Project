@@ -40,7 +40,7 @@ public class Player_Controller : MonoBehaviour{
 
     private void Start()
     {
-        anim = GetComponent<Animator>();
+        anim = GetComponentInChildren<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         tr = GetComponent<TrailRenderer>();
     }
@@ -105,7 +105,7 @@ public class Player_Controller : MonoBehaviour{
 
 
         //Flipping
-        if ((x_axis < 0) && !movingleft)
+       /* if ((x_axis < 0) && !movingleft)
         {
             movingleft = true;
             GetComponent<Transform>().localScale = new Vector3(-1, 1, 1);
@@ -114,7 +114,7 @@ public class Player_Controller : MonoBehaviour{
         {
             movingleft = false;
             GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
-        }
+        }*/
     }
 
     private IEnumerator Atk()
@@ -149,7 +149,7 @@ public class Player_Controller : MonoBehaviour{
 
     void Attack()
     {
-        anim.SetTrigger("atk");
+        
 
         Collider2D[] hit = Physics2D.OverlapCircleAll(atkpoint.position, atkrange, enemylayer);
 
@@ -157,5 +157,7 @@ public class Player_Controller : MonoBehaviour{
         {
             enemy.GetComponent<Health>().TakeDamage(damage);
         }
+
+        anim.SetTrigger("atk");
     }
 }

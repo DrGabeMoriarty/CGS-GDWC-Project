@@ -27,25 +27,30 @@ public class Health : MonoBehaviour
     public void TakeDamage(float damage){
 
         currhealth = Mathf.Clamp(currhealth - damage,0f,maxhealth);
-        
-        if(currhealth > 0){ 
-            anim.SetTrigger("hurt");
+    
+        if(currhealth > 0){
             StartCoroutine(Invincible());
+            anim.SetTrigger("hurt");
         }
         else if(!dead){
-            anim.SetTrigger("die");
+            
             
             if(GetComponent<Player_Controller>() != null){
                 
                 SceneManager.LoadScene("SampleScene"); //Rename this if any error
                 GetComponent<Player_Controller>().enabled =false;
             }
-            
-            if(GetComponent<Enemy>() != null)
+
+            if (GetComponent<Enemy>() != null)
+            {
                 GetComponent<Enemy>().enabled = false;
+                Destroy(gameObject);
+            }
             
             dead = true;
-            }
+
+            anim.SetTrigger("die");
+        }
         }
 
     public void GiveHealth(float health){
@@ -53,8 +58,8 @@ public class Health : MonoBehaviour
     }
 
     private IEnumerator Invincible(){
-
-        Physics2D.IgnoreLayerCollision(6,8,true);
+        
+        Physics2D.IgnoreLayerCollision(6,3,true);
 
         for (int i = 0; i < num_flash; i++){
             sp.color = new Color(1,0,0,0.5f);
@@ -62,7 +67,7 @@ public class Health : MonoBehaviour
             sp.color = Color.white;
             yield return new WaitForSeconds(inv/num_flash);     
         }
-        Physics2D.IgnoreLayerCollision(6,8,false);
+        Physics2D.IgnoreLayerCollision(6,3,false);
     
     }
 
