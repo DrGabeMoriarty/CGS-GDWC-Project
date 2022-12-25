@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class SimpleRandomDungeonGenerator : MonoBehaviour
@@ -14,11 +15,22 @@ public class SimpleRandomDungeonGenerator : MonoBehaviour
     [SerializeField] public bool startRandomEachIteration = true;
 
     [SerializeField] private TilemapVisualizer tilemapVisualizer;
+
+    public Room room;
+
+    public UnityEvent OnFinishedRoomGeneration;
+
     public void RunProceduralGeneration()
     {
         HashSet<Vector2Int> floorPositions = RunRandomWalk();
         tilemapVisualizer.Clear();
         tilemapVisualizer.PaintfloorTiles(floorPositions);
+        WallGenerator.CreateWalls(floorPositions, tilemapVisualizer);
+        room.RoomCenterPos = startPosition;
+        room.FloorTiles = floorPositions;
+        
+        OnFinishedRoomGeneration?.Invoke();
+  
     }
 
     protected HashSet<Vector2Int> RunRandomWalk()

@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] private LayerMask playerlayer;
-    [SerializeField] private Transform player;
+    /*[SerializeField]*/ private Transform player;
     private Health playerhealth;
 
     private float timer = Mathf.Infinity;
@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
 
     private void Awake()
     {
+        player = GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<Transform>();
         anim = GetComponent<Animator>();
         box = GetComponent<BoxCollider2D>();
         rb2d = GetComponent<Rigidbody2D>();
@@ -58,6 +59,7 @@ public class Enemy : MonoBehaviour
             if (timer >= atkcooldown)
             {
                 timer = 0;
+                DamagePlayer();
                 anim.SetTrigger("Attack");
             }
         }
