@@ -6,7 +6,6 @@ public class Press_to_speak : MonoBehaviour
 {
     private void OnMouseDown()
     {
-        Debug.Log("here");
         GetComponent<DialogueTrigger>().TriggerDialogue();
     }
 }

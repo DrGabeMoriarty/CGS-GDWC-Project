@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1594412338942633481}
   m_Layer: 0
   m_Name: PropParent
-  m_TagString: Untagged
+  m_TagString: Key
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,6 +44,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7a43d512fdf5e4cb3b03a3924d1bd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  evt:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8389082815021166660, guid: 3339c395d1b6c5c4abd1893811a07caf, type: 3}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6851600429030568398
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,7 +72,7 @@ GameObject:
   - component: {fileID: 485824000352238286}
   m_Layer: 0
   m_Name: Prop
-  m_TagString: Untagged
+  m_TagString: Key
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -139,3 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7a43d512fdf5e4cb3b03a3924d1bd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  evt:
+    m_PersistentCalls:
+      m_Calls: []

@@ -29,6 +29,7 @@ public class Health : MonoBehaviour
         currhealth = Mathf.Clamp(currhealth - damage,0f,maxhealth);
     
         if(currhealth > 0){
+            Debug.Log(currhealth);
             StartCoroutine(Invincible());
             anim.SetTrigger("hurt");
         }
@@ -37,7 +38,7 @@ public class Health : MonoBehaviour
             
             if(GetComponent<Player_Controller>() != null){
                 
-                SceneManager.LoadScene("SampleScene"); //Rename this if any error
+                SceneManager.LoadScene(1); //Rename this if any error
                 GetComponent<Player_Controller>().enabled =false;
             }
 
@@ -47,6 +48,11 @@ public class Health : MonoBehaviour
                 Destroy(gameObject);
             }
             
+            if(GetComponent<Executioner>() != null)
+            {
+                SceneManager.LoadScene(0);
+            }
+
             dead = true;
 
             anim.SetTrigger("die");
@@ -55,6 +61,24 @@ public class Health : MonoBehaviour
 
     public void GiveHealth(float health){
         currhealth = Mathf.Clamp(currhealth + health,0f,maxhealth);
+    }
+
+    public void Inv()
+    {
+        StartCoroutine(Invincible2());
+    }
+
+    private IEnumerator Invincible2()
+    {
+        Physics2D.IgnoreLayerCollision(6, 3, true);
+
+        for (int i = 0; i < num_flash; i++)
+        {
+            yield return new WaitForSeconds(inv / num_flash);
+            yield return new WaitForSeconds(inv / num_flash);
+        }
+        Physics2D.IgnoreLayerCollision(6, 3, false);
+
     }
 
     private IEnumerator Invincible(){

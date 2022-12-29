@@ -219,6 +219,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8389082815021166662}
   - component: {fileID: 8389082815021166663}
+  - component: {fileID: 1547522649848126498}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -255,6 +256,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c31eb602b7a5f40a2db516c548b682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  evt:
+    m_PersistentCalls:
+      m_Calls: []
   speed: 2
   run: 1
   dashingPower: 24
@@ -271,3 +275,18 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   projectile: {fileID: 1006022238799278316, guid: 73818e14331da75458e9920fc803704e, type: 3}
+--- !u!114 &1547522649848126498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8389082815021166660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593beaaea3c9e9244a4459417fa10c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxhealth: 100
+  inv: 2
+  num_flash: 3

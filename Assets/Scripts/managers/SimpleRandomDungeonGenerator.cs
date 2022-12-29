@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 public class SimpleRandomDungeonGenerator : MonoBehaviour
 {
-    [SerializeField] protected Vector2Int startPosition = Vector2Int.zero;
+    [SerializeField] public Vector2Int startPosition = Vector2Int.zero;
 
     [SerializeField] private int iterations = 10;
     [SerializeField] public int walkLength = 10;

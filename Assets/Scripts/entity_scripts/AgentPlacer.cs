@@ -28,7 +28,6 @@ public class AgentPlacer : MonoBehaviour
 
     private void PlaceEnemies(Room room, int enemiesCount)
     {
-        Debug.Log("here");
 
         for(int k = 0; k < enemiesCount; k++)
         {

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class Player_Controller : MonoBehaviour{
    
@@ -12,6 +14,9 @@ public class Player_Controller : MonoBehaviour{
     private Animator anim;
     private Rigidbody2D rb2d;
     private TrailRenderer tr;
+
+    private int numofKeys = 0;
+    public UnityEvent evt;
 
     [Header ("Movement")]
     public float speed = 2f;
@@ -88,7 +93,7 @@ public class Player_Controller : MonoBehaviour{
 
         if (timebwshots <= 0)
         {
-             if (Input.GetMouseButtonDown(0))
+             if (Input.GetMouseButtonDown(1))
              {
                 Instantiate(projectile,shotpoint.position,transform.rotation);
                 timebwshots = atkrate;
@@ -103,18 +108,23 @@ public class Player_Controller : MonoBehaviour{
         if ((x != 0) || (y != 0)) anim.SetBool("walk", true);
         else anim.SetBool("walk", false);
 
-
-        //Flipping
-       /* if ((x_axis < 0) && !movingleft)
+        //Enter Boss Level
+        if (numofKeys >= 4)
         {
-            movingleft = true;
-            GetComponent<Transform>().localScale = new Vector3(-1, 1, 1);
+            numofKeys = 0;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
-        else if ((x_axis > 0) && movingleft)
-        {
-            movingleft = false;
-            GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
-        }*/
+        //Flipping
+        /* if ((x_axis < 0) && !movingleft)
+         {
+             movingleft = true;
+             GetComponent<Transform>().localScale = new Vector3(-1, 1, 1);
+         }
+         else if ((x_axis > 0) && movingleft)
+         {
+             movingleft = false;
+             GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
+         }*/
     }
 
     private IEnumerator Atk()
@@ -140,7 +150,7 @@ public class Player_Controller : MonoBehaviour{
     void Ranged()
     {
         anim.SetTrigger("atk");
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             Debug.Log("hit");   
             Instantiate(projectile, shotpoint.position, transform.rotation);
@@ -159,5 +169,14 @@ public class Player_Controller : MonoBehaviour{
         }
 
         anim.SetTrigger("atk");
+    }
+
+    public void Next_Dungeon()
+    {
+            Debug.Log(numofKeys);
+            transform.position = Vector3.zero;           
+            numofKeys++;
+            evt?.Invoke();
+        
     }
 }
