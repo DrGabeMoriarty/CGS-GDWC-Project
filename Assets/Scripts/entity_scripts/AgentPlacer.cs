@@ -11,12 +11,7 @@ public class AgentPlacer : MonoBehaviour
     [SerializeField]
     private int roomEnemiesCount;
 
-    Room room;
-
-    private void Awake()
-    {
-        room = FindObjectOfType<Room>();
-    }
+    public Room room;
 
     public void PlaceAgents()
     {
@@ -28,11 +23,10 @@ public class AgentPlacer : MonoBehaviour
 
     private void PlaceEnemies(Room room, int enemiesCount)
     {
-
-        for(int k = 0; k < enemiesCount; k++)
+        System.Random random = new System.Random();
+        for (int k = 0; k < enemiesCount; k++)
         {
             GameObject enemy = Instantiate(enemyPrefab);
-            System.Random random = new System.Random();
             Vector2Int Tile = room.FloorTiles.ElementAt(random.Next(room.FloorTiles.Count));
             enemy.transform.localPosition = (Vector2)Tile + Vector2.one*0.5f;
         }

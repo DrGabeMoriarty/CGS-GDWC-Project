@@ -8,9 +8,9 @@ public class Health : MonoBehaviour
     private Animator anim;
     private SpriteRenderer sp;
     private bool dead = false;
-    
-    [Header ("Health")]
-    [SerializeField] private float maxhealth = 100f;
+
+    [Header("Health")]
+    [SerializeField] private float maxhealth = 100f; 
     
     [Header ("Iframes")]
     [SerializeField] private float inv = 5f;
@@ -29,7 +29,6 @@ public class Health : MonoBehaviour
         currhealth = Mathf.Clamp(currhealth - damage,0f,maxhealth);
     
         if(currhealth > 0){
-            Debug.Log(currhealth);
             StartCoroutine(Invincible());
             anim.SetTrigger("hurt");
         }
@@ -97,6 +96,11 @@ public class Health : MonoBehaviour
 
     private void Deactivate(){
         gameObject.SetActive(false);
+    }
+
+    public float getMaxHealth()
+    {
+        return maxhealth;
     }
 
 }

@@ -9,7 +9,7 @@ public class Generate_Dungeon : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     { 
-        dungeon.RunProceduralGeneration();
+        dungeon.GenerateDungeon();
     }
 
     // Update is called once per frame
