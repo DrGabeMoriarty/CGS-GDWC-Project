@@ -7,7 +7,11 @@ public class Executioner : MonoBehaviour
     [Header("Attack")]
 
     [SerializeField] private float atkTime = 5f;
+    [SerializeField] private float speed = 1f;
     [SerializeField] private float tiredtime = 5f;
+
+    [Header("Iframes")]
+    [SerializeField] private int num_flash = 4;
 
     [Header ("Player")]
     [SerializeField] private LayerMask playerlayer;
@@ -21,40 +25,51 @@ public class Executioner : MonoBehaviour
     private BoxCollider2D box;
     private Rigidbody2D rb2d;
 
-    private bool isInv = true;
-    
+    private bool isInv = false;
+    private float magnitude = 0f;
+    private bool resume =true;
+
     private void Awake()
     {
         player = GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<Transform>();
+        playerhealth = player.GetComponent<Health>();
         anim = GetComponent<Animator>();
         box = GetComponent<BoxCollider2D>();
-        //rb2d = GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if (isInv)
+        Vector3 direction = player.position - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        magnitude = direction.magnitude;
+        direction.Normalize();
+
+        if (isInv && resume)
         {
-            GetComponent<Health>().Inv();
             StartCoroutine(Atk());
             Attack();
+            if (magnitude >= distance)
+            {
+                rb2d.MovePosition((Vector2)transform.position + ((Vector2)direction * speed * Time.deltaTime));
+            }
         }
         else
         {
             StartCoroutine(Tired());
             Tire();
         }
-
     }
 
     private IEnumerator Atk()
     {
-        isInv = true;
         yield return new WaitForSeconds(atkTime);
         isInv = false;
     }
+
     private IEnumerator Tired()
     {
         isInv = false;
@@ -75,8 +90,7 @@ public class Executioner : MonoBehaviour
 
         if (PlayerClose())
         {
-            DamagePlayer();
-            Debug.Log("gere");
+            playerhealth.TakeDamage(damage);
         }
     }
 
@@ -85,19 +99,15 @@ public class Executioner : MonoBehaviour
         RaycastHit2D hit = Physics2D.BoxCast(box.bounds.center + transform.right * distance * transform.localScale.x,
         new Vector3(box.bounds.size.x + range, box.bounds.size.y, box.bounds.size.z), 0, Vector2.left, 0, playerlayer);
 
-        if (hit.collider != null)
-        {
-            playerhealth = hit.transform.GetComponent<Health>();
-        }
-
         return (hit.collider != null);
     }
 
-    private void DamagePlayer()
+    public void Pause()
     {
-        if (PlayerClose())
-        {
-            playerhealth.TakeDamage(damage);
-        }
+        resume = false;
+    }
+    public void Resume()
+    {
+        resume = true;
     }
 }

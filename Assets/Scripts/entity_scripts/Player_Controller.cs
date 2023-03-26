@@ -1,22 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
+
 
 public class Player_Controller : MonoBehaviour{
    
     private bool movingleft = false;
-    private bool isDashing = false;
     private bool canDash = true;
     private bool isAtk = false;
 
     private Animator anim;
     private Rigidbody2D rb2d;
     private TrailRenderer tr;
-
-    private int numofKeys = 0;
-    public UnityEvent evt;
 
     [Header ("Movement")]
     public float speed = 2f;
@@ -37,6 +32,15 @@ public class Player_Controller : MonoBehaviour{
     public float atkrate = 1f;
     private float timebwshots;
 
+
+    [Header("Blood")]
+    [SerializeField] private float timeTohurt;
+    [SerializeField] private float damagePhantom = 1f;
+    public bool PhantomOn = true;
+    private bool isNull = false;
+    private Health health;
+    private float tempTime;
+
     [Header("Components")]
     [SerializeField] private Transform atkpoint;
     [SerializeField] private Transform shotpoint;
@@ -48,17 +52,82 @@ public class Player_Controller : MonoBehaviour{
         anim = GetComponentInChildren<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         tr = GetComponent<TrailRenderer>();
+        health = GetComponent<Health>();
+        if(health == null)
+        {
+            isNull = true;
+        }
+
     }
 
     void Update()
     {
+        //Remove health with time
+        if(!isNull && PhantomOn) 
+        {
+            if (tempTime <= 0)
+            {
+                health.TakePhantomDamage(damagePhantom);
+                tempTime = timeTohurt;
+            }
 
-        //disable updates while dashing
-        if (isDashing || isAtk) return;
+            else
+                tempTime -= Time.deltaTime;
+        }
 
+        //disable updates while dashing or attacking
+        if (!canDash || isAtk)
+            return;
+
+        //Dashing
+        if (Input.GetKeyDown(KeyCode.Z) && canDash) 
+            StartCoroutine(Dash());
+
+        //Attacking
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(Atk());
+            Attack();
+        }
+
+        //Ranged 
+        Vector3 difference = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+        float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
+       
+        if (timebwshots <= 0)
+        {
+             if (Input.GetMouseButtonDown(1))
+             {
+                Instantiate(projectile,shotpoint.position, Quaternion.Euler(0f, 0f, rotZ - 90f));
+                timebwshots = atkrate;
+             }
+        }
+       else
+        {
+            timebwshots -= Time.deltaTime;
+        }
+
+        //Animations
+        //Flipping
+        /* if ((x_axis < 0) && !movingleft)
+         {
+             movingleft = true;
+             GetComponent<Transform>().localScale = new Vector3(-1, 1, 1);
+         }
+         else if ((x_axis > 0) && movingleft)
+         {
+             movingleft = false;
+             GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
+         }*/
+    }
+
+    private void FixedUpdate()
+    {
+        //disable updates while dashing or attacking
+        if (!canDash || isAtk)
+            return;
 
         //Movement 
-
         float sp = speed;
         int x, y;
         float x_axis = Input.GetAxisRaw("Horizontal");
@@ -74,57 +143,11 @@ public class Player_Controller : MonoBehaviour{
         else if (y_axis < -0.1) y = -1;
         else y = 0;
 
-        transform.localPosition += new Vector3(x * sp * Time.deltaTime, y * sp * Time.deltaTime, 0);
-
-        //Dashing
-        if (Input.GetKeyDown(KeyCode.Z) && canDash) StartCoroutine(Dash());
-
-        //Attacking
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(Atk());
-            Attack();
-        }
-
-        //Ranged 
-        Vector3 difference = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-        float rotZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, rotZ - 90f);
-
-        if (timebwshots <= 0)
-        {
-             if (Input.GetMouseButtonDown(1))
-             {
-                Instantiate(projectile,shotpoint.position,transform.rotation);
-                timebwshots = atkrate;
-             }
-        }
-        else
-        {
-            timebwshots -= Time.deltaTime;
-        }
+        rb2d.velocity = new Vector2(x * sp * Time.deltaTime * 100, y * sp * Time.deltaTime * 100);
 
         //Animations
         if ((x != 0) || (y != 0)) anim.SetBool("walk", true);
         else anim.SetBool("walk", false);
-
-        //Enter Boss Level
-        if (numofKeys >= 4)
-        {
-            numofKeys = 0;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        }
-        //Flipping
-        /* if ((x_axis < 0) && !movingleft)
-         {
-             movingleft = true;
-             GetComponent<Transform>().localScale = new Vector3(-1, 1, 1);
-         }
-         else if ((x_axis > 0) && movingleft)
-         {
-             movingleft = false;
-             GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
-         }*/
     }
 
     private IEnumerator Atk()
@@ -137,30 +160,17 @@ public class Player_Controller : MonoBehaviour{
     private IEnumerator Dash()
     {
         canDash = false;
-        isDashing = true;
-        rb2d.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        rb2d.velocity.Normalize();
+        rb2d.velocity *= dashingPower; 
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
-        tr.emitting = false;
-        isDashing = false;
-        yield return new WaitForSeconds(dashingCoolDown);
         canDash = true;
-    }
-
-    void Ranged()
-    {
-        anim.SetTrigger("atk");
-        if (Input.GetMouseButtonDown(1))
-        {
-            Debug.Log("hit");   
-            Instantiate(projectile, shotpoint.position, transform.rotation);
-        }
+        tr.emitting = false;
+        yield return new WaitForSeconds(dashingCoolDown);
     }
 
     void Attack()
     {
-        
-
         Collider2D[] hit = Physics2D.OverlapCircleAll(atkpoint.position, atkrange, enemylayer);
 
         foreach (Collider2D enemy in hit)
@@ -171,12 +181,4 @@ public class Player_Controller : MonoBehaviour{
         anim.SetTrigger("atk");
     }
 
-    public void Next_Dungeon()
-    {
-            Debug.Log(numofKeys);
-            transform.position = Vector3.zero;           
-            numofKeys++;
-            evt?.Invoke();
-        
-    }
 }

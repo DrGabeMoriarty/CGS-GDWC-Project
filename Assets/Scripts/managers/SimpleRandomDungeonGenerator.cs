@@ -14,6 +14,7 @@ public class SimpleRandomDungeonGenerator : AbstractDungeonGenerator
     public Room room;
 
     public UnityEvent OnFinishedRoomGeneration;
+    
 
     protected override void RunProceduralGeneration()
     {

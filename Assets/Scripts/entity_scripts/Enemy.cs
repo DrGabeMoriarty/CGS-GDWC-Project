@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float atkcooldown;
     [SerializeField] private float range;
     [SerializeField] private float distance;
+    [SerializeField] private float aggrodist;
     [SerializeField] private int damage;
 
     //[Header ("Colliders")]
@@ -36,7 +37,7 @@ public class Enemy : MonoBehaviour
         rb2d = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
 
         timer += Time.deltaTime;
@@ -48,9 +49,9 @@ public class Enemy : MonoBehaviour
         direction.Normalize();
 
         //Chase
-        if (magnitude >= distance)
+        if (magnitude >= distance && magnitude <= aggrodist)
         {
-            rb2d.MovePosition((Vector2)transform.position + ((Vector2)direction * speed * Time.deltaTime));
+            rb2d.velocity = (Vector2) direction * speed *10*Time.deltaTime;
         }
 
         //Attack

@@ -13,15 +13,26 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public Animator animator;
 
+    private Executioner exec = null;
+    public King king;
+    public spawn_music sp;
 
     // Start is called before the first frame update
     void Start()
     {
         sentences = new Queue<string>();
+        exec = FindObjectOfType<Executioner>().GetComponent<Executioner>();
     }
 
     public void StartDialogue(Dialogue dialogue)
     {
+        if(exec != null)
+            exec.Pause();
+        if (sp != null)
+            sp.Pause();
+        if (king != null)
+            king.Pause();
+            
         animator.SetBool("isOpen", true);
         nameText.text = dialogue.name;
         sentences.Clear();
@@ -58,6 +69,12 @@ public class DialogueManager : MonoBehaviour
 
     void EndDialogue()
     {
+        if (exec != null)
+            exec.Resume();
+        if (sp != null)
+            sp.Resume();
+        if (king != null)
+            king.Resume(); 
         animator.SetBool("isOpen", false);
     }
 }

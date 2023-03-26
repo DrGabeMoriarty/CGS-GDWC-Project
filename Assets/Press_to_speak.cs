@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class Press_to_speak : MonoBehaviour
 {
-    private void OnMouseDown()
+    private void OnTriggerStay2D()
     {
-        GetComponent<DialogueTrigger>().TriggerDialogue();
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            GetComponent<DialogueTrigger>().TriggerDialogue();
+        }
     }
 }

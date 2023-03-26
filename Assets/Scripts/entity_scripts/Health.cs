@@ -7,7 +7,7 @@ public class Health : MonoBehaviour
 {
     private Animator anim;
     private SpriteRenderer sp;
-    private bool dead = false;
+    private bool enemyinv = false;
 
     [Header("Health")]
     [SerializeField] private float maxhealth = 100f; 
@@ -15,44 +15,52 @@ public class Health : MonoBehaviour
     [Header ("Iframes")]
     [SerializeField] private float inv = 5f;
     [SerializeField] private int num_flash = 4;
+    [SerializeField] private float deathtime = 1f;
 
     public float currhealth { get; private set; }
+
+    private Health playerhealth;
 
     private void Awake(){
         currhealth = maxhealth;
         anim = GetComponent<Animator>();
         sp = GetComponent<SpriteRenderer>();
+        playerhealth = FindObjectOfType<Player_Controller>().GetComponent<Health>();
+        if (playerhealth == null)
+            playerhealth = FindObjectOfType<Player_Piano>().GetComponent<Health>();
     }
   
     public void TakeDamage(float damage){
 
-        currhealth = Mathf.Clamp(currhealth - damage,0f,maxhealth);
-    
-        if(currhealth > 0){
+        if (GetComponent<Executioner>() != null || GetComponent<Enemy>() != null || GetComponent<King>() != null)
+        {
+            if (!enemyinv)
+            {
+                currhealth = Mathf.Clamp(currhealth - damage, 0f, maxhealth);
+                StartCoroutine(Inv_ex());
+            }
+        }
+        else currhealth = Mathf.Clamp(currhealth - damage, 0f, maxhealth);
+
+        if (currhealth > 0){
             StartCoroutine(Invincible());
             anim.SetTrigger("hurt");
         }
-        else if(!dead){
-            
-            
-            if(GetComponent<Player_Controller>() != null){
-                
-                SceneManager.LoadScene(1); //Rename this if any error
+        else if(currhealth <= 0){
+            if (GetComponent<Player_Controller>() != null || GetComponent<Player_Piano>()!=null 
+                || GetComponent<Mike>() != null){
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); //Rename this if any error
                 GetComponent<Player_Controller>().enabled =false;
             }
-
-            if (GetComponent<Enemy>() != null)
+            else if(GetComponent<Executioner>() != null || GetComponent<King>() != null)
             {
-                GetComponent<Enemy>().enabled = false;
-                Destroy(gameObject);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             }
-            
-            if(GetComponent<Executioner>() != null)
+            else
             {
-                SceneManager.LoadScene(0);
+                Invoke("DestroyEnemy", deathtime);
+                playerhealth.GiveHealth(5f);
             }
-
-            dead = true;
 
             anim.SetTrigger("die");
         }
@@ -62,28 +70,27 @@ public class Health : MonoBehaviour
         currhealth = Mathf.Clamp(currhealth + health,0f,maxhealth);
     }
 
-    public void Inv()
+    public void TakePhantomDamage(float damage)
     {
-        StartCoroutine(Invincible2());
+        currhealth = Mathf.Clamp(currhealth - damage, 0f, maxhealth);
     }
 
-    private IEnumerator Invincible2()
+        private IEnumerator Inv_ex()
     {
-        Physics2D.IgnoreLayerCollision(6, 3, true);
-
+        enemyinv = true;
         for (int i = 0; i < num_flash; i++)
         {
+            sp.color = new Color(1, 0, 0, 0.5f);
             yield return new WaitForSeconds(inv / num_flash);
+            sp.color = Color.white;
             yield return new WaitForSeconds(inv / num_flash);
         }
-        Physics2D.IgnoreLayerCollision(6, 3, false);
-
+        enemyinv = false;
     }
-
-    private IEnumerator Invincible(){
+    
+        private IEnumerator Invincible(){
         
         Physics2D.IgnoreLayerCollision(6,3,true);
-
         for (int i = 0; i < num_flash; i++){
             sp.color = new Color(1,0,0,0.5f);
             yield return new WaitForSeconds(inv/num_flash);       
@@ -91,13 +98,12 @@ public class Health : MonoBehaviour
             yield return new WaitForSeconds(inv/num_flash);     
         }
         Physics2D.IgnoreLayerCollision(6,3,false);
-    
     }
 
-    private void Deactivate(){
-        gameObject.SetActive(false);
+    private void DestroyEnemy()
+    {
+        Destroy(gameObject);
     }
-
     public float getMaxHealth()
     {
         return maxhealth;

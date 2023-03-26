@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour
     public float life = 1f;
     public float distance = 1f;
     public float damage = 1f;
-    public LayerMask ignorelayer;
+    public LayerMask enemylayer;
 
     private void Start()
     {
@@ -22,15 +22,15 @@ public class Projectile : MonoBehaviour
 
 
         //Damage
-        RaycastHit2D hitinfo = Physics2D.Raycast(transform.localPosition, transform.up, distance,ignorelayer);
+        RaycastHit2D hitinfo = Physics2D.Raycast(transform.localPosition, transform.up, distance,enemylayer);
         
 
         if (hitinfo.collider != null){
 
             if (hitinfo.collider.CompareTag("Enemy"))
             {
-                Debug.Log("hit");
                 hitinfo.collider.GetComponentInParent<Health>().TakeDamage(damage);
+                
             }
             DestroyProjectile();
         }

@@ -96,9 +96,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  life: 1
+  life: 0.5
   distance: 1
   damage: 1
-  ignorelayer:
+  tag: Enemy
+  enemylayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
