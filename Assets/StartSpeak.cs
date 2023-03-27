@@ -5,7 +5,7 @@ using UnityEngine;
 public class StartSpeak : MonoBehaviour
 {
     
-    void Start()
+    void Awake()
     {
         Invoke("Speak", 0.2f);
     }

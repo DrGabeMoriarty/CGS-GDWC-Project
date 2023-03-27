@@ -1168,6 +1168,7 @@ GameObject:
   - component: {fileID: 175681597}
   - component: {fileID: 175681596}
   - component: {fileID: 175681595}
+  - component: {fileID: 175681599}
   m_Layer: 0
   m_Name: tutorial bat 2 (1)
   m_TagString: Untagged
@@ -1239,6 +1240,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &175681599
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175681594}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.24, y: 0.09}
+  serializedVersion: 2
+  m_Radius: 0.26
 --- !u!213 &179788404
 Sprite:
   m_ObjectHideFlags: 0
@@ -1461,6 +1478,7 @@ GameObject:
   - component: {fileID: 298982454}
   - component: {fileID: 298982453}
   - component: {fileID: 298982452}
+  - component: {fileID: 298982456}
   m_Layer: 0
   m_Name: tutorial bat 2
   m_TagString: Untagged
@@ -1478,12 +1496,12 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.27, y: 0.09}
+  m_Offset: {x: 0.24, y: 0.09}
   serializedVersion: 2
-  m_Radius: 2
+  m_Radius: 0.26
 --- !u!114 &298982453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1535,6 +1553,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &298982456
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 298982451}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.27, y: 0.09}
+  serializedVersion: 2
+  m_Radius: 2
 --- !u!1 &511802563
 GameObject:
   m_ObjectHideFlags: 0
@@ -1692,6 +1726,7 @@ GameObject:
   - component: {fileID: 767302744}
   - component: {fileID: 767302743}
   - component: {fileID: 767302742}
+  - component: {fileID: 767302745}
   m_Layer: 0
   m_Name: Next
   m_TagString: Untagged
@@ -1752,12 +1787,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &767302745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 767302741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c154a63b44a516643a904d1f0e53ec66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: 
 --- !u!1 &842158970 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8389082815021166660, guid: 3339c395d1b6c5c4abd1893811a07caf, type: 3}
   m_PrefabInstance: {fileID: 8389082814891628924}
   m_PrefabAsset: {fileID: 0}
---- !u!50 &842158974
+--- !u!50 &842158971
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -1777,7 +1825,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!1 &933359242
 GameObject:
   m_ObjectHideFlags: 0
@@ -1818,8 +1866,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1004866191}
   - component: {fileID: 1004866193}
-  - component: {fileID: 1004866194}
   - component: {fileID: 1004866192}
+  - component: {fileID: 1004866195}
+  - component: {fileID: 1004866194}
   m_Layer: 0
   m_Name: tutorial bat
   m_TagString: Untagged
@@ -1877,8 +1926,8 @@ MonoBehaviour:
       the Evil King
     - For starters why don't you try to move using the W A S D keys
     - Also to interact with others press X
---- !u!61 &1004866194
-BoxCollider2D:
+--- !u!58 &1004866194
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1890,19 +1939,25 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.26614112, y: 0.24713092}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_Offset: {x: 0.21, y: 0.07}
   serializedVersion: 2
-  m_Size: {x: 1.760403, y: 0.9239596}
-  m_EdgeRadius: 0
+  m_Radius: 1.82
+--- !u!58 &1004866195
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004866190}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.24, y: 0.09}
+  serializedVersion: 2
+  m_Radius: 0.26
 --- !u!1 &1052918335
 GameObject:
   m_ObjectHideFlags: 0

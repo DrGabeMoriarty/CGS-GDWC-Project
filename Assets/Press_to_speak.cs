@@ -4,7 +4,23 @@ using UnityEngine;
 
 public class Press_to_speak : MonoBehaviour
 {
-    private void OnTriggerStay2D()
+    public bool isInRange = false;
+
+    private void Update()
+    {
+        if (isInRange)
+            Talk();
+    }
+    private void OnTriggerEnter2D()
+    {
+        isInRange = true; 
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        isInRange = false;
+    }
+
+    private void Talk()
     {
         if (Input.GetKeyDown(KeyCode.X))
         {

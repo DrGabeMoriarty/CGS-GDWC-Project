@@ -57,6 +57,7 @@ public class Enemy : MonoBehaviour
         //Attack
         if (PlayerClose())
         {
+            rb2d.velocity = Vector2.zero;
             if (timer >= atkcooldown)
             {
                 timer = 0;
